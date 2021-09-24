@@ -282,7 +282,7 @@ def main(args):
     param_weights = []
     param_biases = []
     for name, param in model_without_ddp.named_parameters():
-        print(name, param)
+        print(name)
         continue
         if not param.requires_grad:
             print('{} is not optimized'.format(name))
