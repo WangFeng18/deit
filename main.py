@@ -29,6 +29,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=UserWarning)
+warnings.simplefilter(action='ignore', category=Warning)
 
 
 def get_args_parser():
