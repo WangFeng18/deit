@@ -244,7 +244,7 @@ def main(args):
     model = vit.__dict__[args.model](drop_path_rate=args.drop_path, num_classes=args.nb_classes, classification=True)
 
     if args.finetune:
-        state_dict = torch.load(args.pretrained, map_location='cpu')['backbone']
+        state_dict = torch.load(args.finetune, map_location='cpu')['backbone']
         missing_keys, unexpected_keys = model.load_state_dict(state_dict, strict=False)
         assert missing_keys == ['fc.weight', 'fc.bias'] and unexpected_keys == []
 
