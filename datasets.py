@@ -74,7 +74,7 @@ def build_dataset(is_train, args):
         elif args.train_percent == 10: train_list_file = 'train_10percent.lmdb'
         elif args.train_percent == 1: train_list_file = 'train_1percent.lmdb'
         val_list_file = 'val.lmdb'
-        dataset = ImageNetLMDB(root=args.data, list_file=train_list_file if is_train else val_list_file, transform=train_transform)
+        dataset = ImageNetLMDB(root=args.data_path, list_file=train_list_file if is_train else val_list_file, transform=train_transform)
         nb_classes = 1000
     elif args.data_set == 'INAT':
         dataset = INatDataset(args.data_path, train=is_train, year=2018,
