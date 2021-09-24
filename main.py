@@ -26,6 +26,8 @@ import models
 import utils
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 def get_args_parser():
