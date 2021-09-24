@@ -254,6 +254,7 @@ def main(args):
     if args.finetune:
         state_dict = torch.load(args.finetune, map_location='cpu')['backbone']
         missing_keys, unexpected_keys = model.load_state_dict(state_dict, strict=False)
+        print(missing_keys)
         assert missing_keys == ['fc.weight', 'fc.bias'] and unexpected_keys == []
 
     model.to(device)
