@@ -24,6 +24,8 @@ from losses import DistillationLoss
 from samplers import RASampler
 import models
 import utils
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 def get_args_parser():
