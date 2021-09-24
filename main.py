@@ -75,6 +75,8 @@ def get_args_parser():
                         help='LR scheduler (default: "cosine"')
     parser.add_argument('--lr', type=float, default=5e-4, metavar='LR',
                         help='learning rate (default: 5e-4)')
+    parser.add_argument('--lr_head', type=float, default=5e-4, metavar='LR',
+                        help='learning rate (default: 5e-4)')
     parser.add_argument('--lr-noise', type=float, nargs='+', default=None, metavar='pct, pct',
                         help='learning rate noise on/off epoch percentages')
     parser.add_argument('--lr-noise-pct', type=float, default=0.67, metavar='PERCENT',
@@ -279,24 +281,35 @@ def main(args):
     args.lr = linear_scaled_lr
     optimizer = create_optimizer(args, model_without_ddp)
 
-    param_weights = []
-    param_biases = []
+    param_backbone_weights = []
+    param_backbone_biases = []
+    param_head_weights = []
+    param_head_biases = []
     for name, param in model_without_ddp.named_parameters():
-        print(name)
-        continue
         if not param.requires_grad:
             print('{} is not optimized'.format(name))
             continue
-        skip = ['pos_embed', 'cls_token', 'dist_token']
-        if len(param.shape) == 1 or name.endswith(".bias") or sum([sk in name for sk in skip]):
-            print('{} has been excluded for weight decay'.format(name))
-            param_biases.append(param)
+        if name not in ['fc.weight', 'fc.bias']:
+            skip = ['pos_embed', 'cls_token', 'dist_token']
+            if len(param.shape) == 1 or name.endswith(".bias") or sum([sk in name for sk in skip]):
+                print('{} has been excluded for weight decay'.format(name))
+                param_backbone_biases.append(param)
+            else:
+                param_backbone_weights.append(param)
         else:
-            param_weights.append(param)
+            skip = ['pos_embed', 'cls_token', 'dist_token']
+            if len(param.shape) == 1 or name.endswith(".bias") or sum([sk in name for sk in skip]):
+                print('{} has been excluded for weight decay'.format(name))
+                param_head_biases.append(param)
+            else:
+                param_head_weights.append(param)
+
 
     bias_weight_decay = 0.0 
-    parameters = [{'params': param_weights, 'weight_decay': args.weight_decay}, 
-                  {'params': param_biases,  'weight_decay': bias_weight_decay}]
+    parameters = [{'params': param_backbone_weights, 'weight_decay': args.weight_decay, 'lr': args.lr}, 
+                  {'params': param_backbone_biases,  'weight_decay': bias_weight_decay, 'lr': args.lr},
+                  {'params': param_head_weights, 'weight_decay': args.weight_decay, 'lr': args.lr_head}, 
+                  {'params': param_head_biases,  'weight_decay': bias_weight_decay, 'lr': args.lr_head}]
     optimizer = torch.optim.AdamW(parameters)
 
     loss_scaler = NativeScaler()
