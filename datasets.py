@@ -61,7 +61,7 @@ class ImageNetLMDB(lmdb):
     def __getitem__(self, index):
         img, target = super(ImageNetLMDB, self).__getitem__(index)
         imgs = self.aug(img)
-        return imgs, target, index
+        return imgs, target
 
 def build_dataset(is_train, args):
     transform = build_transform(is_train, args)
