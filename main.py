@@ -278,6 +278,27 @@ def main(args):
     linear_scaled_lr = args.lr * args.batch_size * utils.get_world_size() / 512.0
     args.lr = linear_scaled_lr
     optimizer = create_optimizer(args, model_without_ddp)
+
+    param_weights = []
+    param_biases = []
+    for name, param in model_without_ddp.named_parameters():
+        print(name, param)
+        continue
+        if not param.requires_grad:
+            print('{} is not optimized'.format(name))
+            continue
+        skip = ['pos_embed', 'cls_token', 'dist_token']
+        if len(param.shape) == 1 or name.endswith(".bias") or sum([sk in name for sk in skip]):
+            print('{} has been excluded for weight decay'.format(name))
+            param_biases.append(param)
+        else:
+            param_weights.append(param)
+
+    bias_weight_decay = 0.0 
+    parameters = [{'params': param_weights, 'weight_decay': args.weight_decay}, 
+                  {'params': param_biases,  'weight_decay': bias_weight_decay}]
+    optimizer = torch.optim.AdamW(parameters)
+
     loss_scaler = NativeScaler()
 
     lr_scheduler, _ = create_scheduler(args, optimizer)
