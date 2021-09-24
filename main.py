@@ -30,6 +30,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=UserWarning)
 warnings.simplefilter(action='ignore', category=Warning)
+warnings.filterwarnings("ignore")
 
 
 def get_args_parser():
