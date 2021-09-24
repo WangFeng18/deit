@@ -34,6 +34,7 @@ def get_args_parser():
     parser.add_argument('--epochs', default=300, type=int)
     parser.add_argument('--train-percent', default=100, type=int, choices=(100, 10, 1),
                         help='size of traing set in percent')
+    parser.add_argument('--val_epoch', default=10, type=int, help='images input size')
 
     # Model parameters
     parser.add_argument('--model', default='vit_s', type=str, metavar='MODEL',
